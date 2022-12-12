@@ -1,67 +1,17 @@
+from pathlib import Path
+
 import tkinter as tk
 
-
-class FirstPage(tk.Frame):
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.configure(bg="blue")
-
-        Button = tk.Button(
-            self,
-            text="Second",
-            font=("Arial", 15),
-            command=lambda: controller.show_frame(SecondPage),
-        )
-        Button.place(x=650, y=450)
+from user import User
+from emotion import Emotion
+from listener import Listener
+from asker import Asker
+from gui import FirstPage, SecondPage, ThirdPage
 
 
-class SecondPage(tk.Frame):
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.configure(bg="green")
-
-        Button = tk.Button(
-            self,
-            text="Third",
-            font=("Arial", 15),
-            command=lambda: controller.show_frame(ThirdPage),
-        )
-        Button.place(x=650, y=450)
-
-        Button = tk.Button(
-            self,
-            text="Home",
-            font=("Arial", 15),
-            command=lambda: controller.show_frame(FirstPage),
-        )
-        Button.place(x=100, y=450)
-
-
-class ThirdPage(tk.Frame):
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.configure(bg="Tomato")
-
-        Button = tk.Button(
-            self,
-            text="Home",
-            font=("Arial", 15),
-            command=lambda: controller.show_frame(FirstPage),
-        )
-        Button.place(x=650, y=450)
-
-        Button = tk.Button(
-            self,
-            text="Back",
-            font=("Arial", 15),
-            command=lambda: controller.show_frame(SecondPage),
-        )
-        Button.place(x=100, y=450)
-
-
-class Application(tk.Tk):
-    def __init__(self, *args, **kwargs):
-        tk.Tk.__init__(self, *args, **kwargs)
+class App(tk.Tk):
+    def __init__(self):
+        tk.Tk.__init__(self)
 
         # creating a window
         window = tk.Frame(self)
@@ -84,6 +34,7 @@ class Application(tk.Tk):
         self.title("Application")
 
 
-app = Application()
-app.maxsize(800, 500)
-app.mainloop()
+if __name__ == "__main__":
+    app = App()
+    app.maxsize(800, 500)
+    app.mainloop()
