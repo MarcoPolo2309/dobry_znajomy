@@ -2,7 +2,14 @@ import pickle
 
 import tkinter as tk
 
-users = pickle.load(open("./data/users.pickle", "rb"))
+from user import User
+from emotion import Emotion
+from listener import Listener
+from asker import Asker
+from user import *
+
+users = Users()
+users_list = users.get_users()
 
 
 class LogIn(tk.Frame):
@@ -32,11 +39,11 @@ class LogIn(tk.Frame):
         password_entry = tk.Entry(self, font=("Arial", 12), bg="#E7FDFF")
         password_entry.place(relwidth=0.25, relheight=0.05, relx=0.383, rely=0.4)
 
-        def log_in(user_name: str = None, user_password: str = None):
-            user_names_passwords = [
-                (user.user_name, user.user_password) for user in users
+        def log_in(controller, user_nick_name: str = None, user_password: str = None):
+            user_nick_names_passwords = [
+                (user.user_nick_name, user.user_password) for user in users_list
             ]
-            if (user_name, user_password) in user_names_passwords:
+            if (user_nick_name, user_password) in user_nick_names_passwords:
                 print("Access granted!")
                 controller.show_frame(Options)
             else:
@@ -48,7 +55,7 @@ class LogIn(tk.Frame):
             font=("Arial", 14),
             fg="#EAFDFF",
             bg="#6EC0ED",
-            command=lambda: log_in(login_entry.get(), password_entry.get()),
+            command=lambda: log_in(controller, login_entry.get(), password_entry.get()),
         )
         button1.place(relwidth=0.25, relheight=0.055, relx=0.383, rely=0.5)
 
@@ -114,13 +121,32 @@ class CreateAccount(tk.Frame):
         password2_entry = tk.Entry(self, font=("Arial", 12), bg="#E7FDFF")
         password2_entry.place(relwidth=0.25, relheight=0.05, relx=0.383, rely=0.6)
 
+        def create_account(
+            controller,
+            user_real_name: str = None,
+            user_surname: str = None,
+            user_nick_name: str = None,
+            user_password: str = None,
+        ):
+            users.create_user(
+                user_real_name, user_surname, user_nick_name, user_password
+            )
+            controller.show_frame(LogIn)
+            print("Added new user")
+
         button3 = tk.Button(
             self,
             text="Create an account",
             font=("Arial", 14),
             fg="#EAFDFF",
             bg="#6EC0ED",
-            command=lambda: controller.show_frame(LogIn),
+            command=lambda: create_account(
+                controller,
+                name_entry.get(),
+                surname_entry.get(),
+                login2_entry.get(),
+                password2_entry.get(),
+            ),
         )
         button3.place(relwidth=0.25, relheight=0.055, relx=0.383, rely=0.7)
 
@@ -214,7 +240,7 @@ class EmotionRecognitionSession(tk.Frame):
             font=("Arial", 14),
             fg="#EAFDFF",
             bg="#50BF84",
-            command=lambda: controller.show_frame(AppListening),
+            command=lambda: controller.show_frame(EmotionRecognitionSessionForm),
         )
         button9.place(relwidth=0.4, relheight=0.5, relx=0.05, rely=0.25)
 
@@ -224,9 +250,157 @@ class EmotionRecognitionSession(tk.Frame):
             font=("Arial", 14),
             fg="#EAFDFF",
             bg="#00C5A4",
-            command=lambda: controller.show_frame(AppAsking),
+            command=lambda: controller.show_frame(EmotionRecognitionSessionForm),
         )
         button10.place(relwidth=0.4, relheight=0.5, relx=0.55, rely=0.25)
+
+
+class EmotionRecognitionSessionForm(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.configure(bg="#D9E9E4")
+
+        goodfriend_label = tk.Label(
+            self, text="Good Friend", font=("Arial", 15), fg="#E258C0", bg="#D9E9E4"
+        )
+        goodfriend_label.place(relwidth=0.15, relheight=0.05, relx=0.425, rely=0.055)
+
+        master = self
+
+        hour_string = ""
+        min_string = ""
+        sec_string = ""
+        last_value = ""
+        f = ("Arial", 14)
+
+        session_type_sb = tk.Spinbox(
+            master,
+            values=("Asking", "Listening"),
+            wrap=True,
+            textvariable=hour_string,
+            width=10,
+            state="readonly",
+            font=f,
+            justify=tk.CENTER,
+        )
+
+        day_sb1 = tk.Spinbox(
+            master,
+            from_=0,
+            to=365,
+            wrap=True,
+            textvariable=hour_string,
+            width=2,
+            state="readonly",
+            font=f,
+            justify=tk.CENTER,
+        )
+
+        hour_sb1 = tk.Spinbox(
+            master,
+            from_=0,
+            to=24,
+            wrap=True,
+            textvariable=hour_string,
+            width=2,
+            state="readonly",
+            font=f,
+            justify=tk.CENTER,
+        )
+
+        min_sb1 = tk.Spinbox(
+            master,
+            from_=0,
+            to=59,
+            wrap=True,
+            textvariable=min_string,
+            width=2,
+            state="readonly",
+            font=f,
+            justify=tk.CENTER,
+        )
+
+        sec_sb1 = tk.Spinbox(
+            master,
+            from_=0,
+            to=59,
+            wrap=True,
+            textvariable=sec_string,
+            width=2,
+            state="readonly",
+            font=f,
+            justify=tk.CENTER,
+        )
+
+        hour_sb = tk.Spinbox(
+            master,
+            from_=0,
+            to=24,
+            wrap=True,
+            textvariable=hour_string,
+            width=2,
+            state="readonly",
+            font=f,
+            justify=tk.CENTER,
+        )
+
+        min_sb = tk.Spinbox(
+            master,
+            from_=0,
+            to=59,
+            wrap=True,
+            textvariable=min_string,
+            width=2,
+            state="readonly",
+            font=f,
+            justify=tk.CENTER,
+        )
+
+        sec_sb = tk.Spinbox(
+            master,
+            from_=0,
+            to=59,
+            wrap=True,
+            textvariable=sec_string,
+            width=2,
+            state="readonly",
+            font=f,
+            justify=tk.CENTER,
+        )
+
+        feedback_sb = tk.Spinbox(
+            master,
+            values=("Yes", "No"),
+            wrap=True,
+            textvariable=sec_string,
+            width=2,
+            state="readonly",
+            font=f,
+            justify=tk.CENTER,
+        )
+
+        session_type_sb.place(relwidth=0.18, relheight=0.08, relx=0.41, rely=0.38)
+
+        day_sb1.place(relwidth=0.06, relheight=0.08, relx=0.38, rely=0.5)
+        hour_sb1.place(relwidth=0.06, relheight=0.08, relx=0.44, rely=0.5)
+        min_sb1.place(relwidth=0.06, relheight=0.08, relx=0.50, rely=0.5)
+        sec_sb1.place(relwidth=0.06, relheight=0.08, relx=0.56, rely=0.5)
+
+        hour_sb.place(relwidth=0.06, relheight=0.08, relx=0.41, rely=0.62)
+        min_sb.place(relwidth=0.06, relheight=0.08, relx=0.47, rely=0.62)
+        sec_sb.place(relwidth=0.06, relheight=0.08, relx=0.53, rely=0.62)
+
+        feedback_sb.place(relwidth=0.06, relheight=0.08, relx=0.47, rely=0.74)
+
+        button1 = tk.Button(
+            self,
+            text="Start session",
+            font=("Arial", 14),
+            fg="#EAFDFF",
+            bg="#50BF84",
+            command=lambda: controller.show_frame(AppListening),
+        )
+        button1.place(relwidth=0.15, relheight=0.05, relx=0.425, rely=1 - 0.055)
 
 
 class AppListening(tk.Frame):

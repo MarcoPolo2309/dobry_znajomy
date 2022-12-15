@@ -3,10 +3,6 @@ import pickle
 
 import tkinter as tk
 
-from user import User
-from emotion import Emotion
-from listener import Listener
-from asker import Asker
 from gui import *
 
 
@@ -28,6 +24,7 @@ class App(tk.Tk):
             CreateAccount,
             CheckStatistics,
             EmotionRecognitionSession,
+            EmotionRecognitionSessionForm,
             AppListening,
             AppAsking,
             SeeResolution,
