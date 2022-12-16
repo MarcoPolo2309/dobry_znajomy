@@ -1,3 +1,4 @@
+import datetime
 import pickle
 
 import tkinter as tk
@@ -10,6 +11,8 @@ from user import *
 
 users = Users()
 users_list = users.get_users()
+
+session = None
 
 
 class LogIn(tk.Frame):
@@ -167,7 +170,7 @@ class Options(tk.Frame):
             font=("Arial", 14),
             fg="#EAFDFF",
             bg="#AED8A5",
-            command=lambda: controller.show_frame(EmotionRecognitionSession),
+            command=lambda: controller.show_frame(EmotionRecognitionSessionForm),
         )
         button4.place(relwidth=0.4, relheight=0.5, relx=0.05, rely=0.25)
 
@@ -261,9 +264,12 @@ class EmotionRecognitionSessionForm(tk.Frame):
         self.configure(bg="#D9E9E4")
 
         goodfriend_label = tk.Label(
-            self, text="Good Friend", font=("Arial", 15), fg="#E258C0", bg="#D9E9E4"
+            self,
+            text="Set session parameters",
+            font=("Arial", 15),
+            fg="#E258C0",
+            bg="#D9E9E4",
         )
-        goodfriend_label.place(relwidth=0.15, relheight=0.05, relx=0.425, rely=0.055)
 
         master = self
 
@@ -272,6 +278,42 @@ class EmotionRecognitionSessionForm(tk.Frame):
         sec_string = ""
         last_value = ""
         f = ("Arial", 14)
+
+        session_type_label = tk.Label(
+            self,
+            text="Type",
+            font=f,
+            fg="#E258C0",
+            bg="#D9E9E4",
+            justify=tk.LEFT,
+        )
+
+        session_duration_label = tk.Label(
+            self,
+            text="Duration (d,h,m,s)",
+            font=f,
+            fg="#E258C0",
+            bg="#D9E9E4",
+            justify=tk.LEFT,
+        )
+
+        session_feedback_timeout_label = tk.Label(
+            self,
+            text="Question every (h,m,s)",
+            font=f,
+            fg="#E258C0",
+            bg="#D9E9E4",
+            justify=tk.LEFT,
+        )
+
+        session_give_feedback_label = tk.Label(
+            self,
+            text="Give feedback",
+            font=f,
+            fg="#E258C0",
+            bg="#D9E9E4",
+            justify=tk.LEFT,
+        )
 
         session_type_sb = tk.Spinbox(
             master,
@@ -378,19 +420,65 @@ class EmotionRecognitionSessionForm(tk.Frame):
             font=f,
             justify=tk.CENTER,
         )
+        goodfriend_label.place(relwidth=0.30, relheight=0.1, relx=0.35, rely=0.1)
 
-        session_type_sb.place(relwidth=0.18, relheight=0.08, relx=0.41, rely=0.38)
+        session_type_label.pack()
+        session_type_label.place(relwidth=0.3, relheight=0.06, relx=0.1, rely=0.28)
+        session_type_sb.place(relwidth=0.18, relheight=0.08, relx=0.41, rely=0.28)
+        session_type = session_type_sb.get()
 
-        day_sb1.place(relwidth=0.06, relheight=0.08, relx=0.38, rely=0.5)
-        hour_sb1.place(relwidth=0.06, relheight=0.08, relx=0.44, rely=0.5)
-        min_sb1.place(relwidth=0.06, relheight=0.08, relx=0.50, rely=0.5)
-        sec_sb1.place(relwidth=0.06, relheight=0.08, relx=0.56, rely=0.5)
+        session_duration_label.pack()
+        session_duration_label.place(relwidth=0.3, relheight=0.06, relx=0.1, rely=0.4)
+        day_sb1.place(relwidth=0.06, relheight=0.08, relx=0.38, rely=0.4)
+        hour_sb1.place(relwidth=0.06, relheight=0.08, relx=0.44, rely=0.4)
+        min_sb1.place(relwidth=0.06, relheight=0.08, relx=0.50, rely=0.4)
+        sec_sb1.place(relwidth=0.06, relheight=0.08, relx=0.56, rely=0.4)
+        hour = int(day_sb1.get()) * 24 + int(hour_sb1.get())
+        minute = int(min_sb1.get())
+        second = int(sec_sb1.get())
+        session_duration = datetime.time(hour=hour, minute=minute, second=second)
 
-        hour_sb.place(relwidth=0.06, relheight=0.08, relx=0.41, rely=0.62)
-        min_sb.place(relwidth=0.06, relheight=0.08, relx=0.47, rely=0.62)
-        sec_sb.place(relwidth=0.06, relheight=0.08, relx=0.53, rely=0.62)
+        session_feedback_timeout_label.pack()
+        session_feedback_timeout_label.place(
+            relwidth=0.3, relheight=0.06, relx=0.1, rely=0.52
+        )
+        hour_sb.place(relwidth=0.06, relheight=0.08, relx=0.41, rely=0.52)
+        min_sb.place(relwidth=0.06, relheight=0.08, relx=0.47, rely=0.52)
+        sec_sb.place(relwidth=0.06, relheight=0.08, relx=0.53, rely=0.52)
+        hour = int(hour_sb.get())
+        minute = int(min_sb.get())
+        second = int(sec_sb.get())
+        session_feedback_timeout = datetime.time(
+            hour=hour, minute=minute, second=second
+        )
 
-        feedback_sb.place(relwidth=0.06, relheight=0.08, relx=0.47, rely=0.74)
+        session_give_feedback_label.pack()
+        session_give_feedback_label.place(
+            relwidth=0.3, relheight=0.06, relx=0.1, rely=0.64
+        )
+        feedback_sb.place(relwidth=0.06, relheight=0.08, relx=0.47, rely=0.64)
+        session_give_feedback = True if feedback_sb.get() == "Yes" else False
+
+        self.session = None
+
+        def start_session(
+            session_type: str,
+            session_duration: datetime,
+            session_feedback_timeout: datetime,
+            session_give_feedback: bool,
+        ):
+            if session_type == "Asking":
+                self.session = Asker(
+                    session_start_date=datetime.datetime.now(),
+                    session_duration=session_duration,
+                    give_feedback=session_give_feedback,
+                    feedback_timeout=session_feedback_timeout,
+                )
+                print("Created Asker session!")
+            else:
+                self.session = Listener()
+
+            controller.show_frame(Wait)
 
         button1 = tk.Button(
             self,
@@ -398,9 +486,28 @@ class EmotionRecognitionSessionForm(tk.Frame):
             font=("Arial", 14),
             fg="#EAFDFF",
             bg="#50BF84",
-            command=lambda: controller.show_frame(AppListening),
+            command=lambda: start_session(
+                session_type,
+                session_duration,
+                session_feedback_timeout,
+                session_give_feedback,
+            ),
         )
-        button1.place(relwidth=0.15, relheight=0.05, relx=0.425, rely=1 - 0.055)
+        button1.place(relwidth=0.30, relheight=0.15, relx=0.35, rely=0.8)
+
+    def get_session(self):
+        return self.session
+
+
+class Wait(tk.Frame):
+    def __init__(self, parent, controller, session):
+        tk.Frame.__init__(self, parent)
+        self.configure(bg="#D9E9E4")
+
+        self.session = session
+
+        if session:
+            print(session.feedback_timeout)
 
 
 class AppListening(tk.Frame):
@@ -493,7 +600,7 @@ class AppAsking(tk.Frame):
 
         answerthequestion_label = tk.Label(
             self,
-            text="Answer the question:",
+            text="Answer the questions below",
             font=("Arial", 13),
             fg="#345B63",
             bg="#D9E9E4",
@@ -504,62 +611,27 @@ class AppAsking(tk.Frame):
 
         howareyou_label = tk.Label(
             self,
-            text="How are you feeling today?",
+            text="How do you feel?",
             font=("Arial", 13),
             fg="#345B63",
             bg="#D9E9E4",
         )
         howareyou_label.place(relwidth=0.25, relheight=0.05, relx=0.2, rely=0.35)
 
-        button14 = tk.Button(
-            self,
-            text="Very bad",
-            font=("Arial", 13),
-            fg="#EAFDFF",
-            bg="#03045e",
-            command=lambda: controller.show_frame(Options),
-        )
-        button14.place(relwidth=0.1, relheight=0.055, relx=0.1, rely=0.44)
+        master = self
+        text = ""
 
-        button15 = tk.Button(
-            self,
-            text="Bad",
+        mood = tk.Spinbox(
+            master,
+            values=("Very bad", "Bad", "Not in the mood", "Good", "Excellent"),
+            wrap=True,
+            textvariable=text,
+            width=10,
+            state="readonly",
             font=("Arial", 13),
-            fg="#EAFDFF",
-            bg="#023e8a",
-            command=lambda: controller.show_frame(Options),
+            justify=tk.CENTER,
         )
-        button15.place(relwidth=0.1, relheight=0.055, relx=0.25, rely=0.44)
-
-        button16 = tk.Button(
-            self,
-            text="Not in the mood",
-            font=("Arial", 13),
-            fg="#EAFDFF",
-            bg="#0077b6",
-            command=lambda: controller.show_frame(Options),
-        )
-        button16.place(relwidth=0.2, relheight=0.055, relx=0.4, rely=0.44)
-
-        button17 = tk.Button(
-            self,
-            text="Good",
-            font=("Arial", 13),
-            fg="#EAFDFF",
-            bg="#00b4d8",
-            command=lambda: controller.show_frame(Options),
-        )
-        button17.place(relwidth=0.1, relheight=0.055, relx=0.65, rely=0.44)
-
-        button17 = tk.Button(
-            self,
-            text="Excellent",
-            font=("Arial", 13),
-            fg="#EAFDFF",
-            bg="#48cae4",
-            command=lambda: controller.show_frame(Options),
-        )
-        button17.place(relwidth=0.12, relheight=0.055, relx=0.8, rely=0.44)
+        mood.place(relwidth=0.2, relheight=0.055, relx=0.4, rely=0.44)
 
         whichemotion_label = tk.Label(
             self,
@@ -570,55 +642,27 @@ class AppAsking(tk.Frame):
         )
         whichemotion_label.place(relwidth=0.45, relheight=0.05, relx=0.19, rely=0.58)
 
-        button18 = tk.Button(
-            self,
-            text="Happiness",
+        emotion = tk.Spinbox(
+            master,
+            values=("Happiness", "Sadness", "Neutral", "Fear", "Anger"),
+            wrap=True,
+            textvariable=text,
+            width=10,
+            state="readonly",
             font=("Arial", 13),
-            fg="#EAFDFF",
-            bg="#48cae4",
-            command=lambda: controller.show_frame(Resolution),
+            justify=tk.CENTER,
         )
-        button18.place(relwidth=0.12, relheight=0.055, relx=0.1, rely=0.67)
+        emotion.place(relwidth=0.12, relheight=0.055, relx=0.45, rely=0.67)
 
-        button19 = tk.Button(
+        submit_button = tk.Button(
             self,
-            text="Sadness",
-            font=("Arial", 13),
-            fg="#EAFDFF",
-            bg="#00b4d8",
-            command=lambda: controller.show_frame(Resolution),
-        )
-        button19.place(relwidth=0.12, relheight=0.055, relx=0.275, rely=0.67)
-
-        button20 = tk.Button(
-            self,
-            text="Neutral",
-            font=("Arial", 13),
-            fg="#EAFDFF",
-            bg="#0077b6",
-            command=lambda: controller.show_frame(Resolution),
-        )
-        button20.place(relwidth=0.12, relheight=0.055, relx=0.45, rely=0.67)
-
-        button21 = tk.Button(
-            self,
-            text="Fear",
-            font=("Arial", 13),
-            fg="#EAFDFF",
-            bg="#023e8a",
-            command=lambda: controller.show_frame(Resolution),
-        )
-        button21.place(relwidth=0.12, relheight=0.055, relx=0.625, rely=0.67)
-
-        button22 = tk.Button(
-            self,
-            text="Anger",
+            text="Submit",
             font=("Arial", 13),
             fg="#EAFDFF",
             bg="#03045e",
-            command=lambda: controller.show_frame(Resolution),
+            command=lambda: controller.show_frame(Wait),
         )
-        button22.place(relwidth=0.12, relheight=0.055, relx=0.805, rely=0.67)
+        submit_button.place(relwidth=0.12, relheight=0.055, relx=0.44, rely=0.76)
 
 
 class SeeResolution(tk.Frame):

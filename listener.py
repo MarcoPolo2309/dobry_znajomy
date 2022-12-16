@@ -12,14 +12,14 @@ class Listener(EmotionRecognizer):
         session_duration: datetime,
         give_feedback: bool,
         feedback_timeout: datetime,
-        silent_dates: list[dict],
+        # silent_dates: list[dict],
     ):
         super().__init__(
             session_start_date,
             session_duration,
             give_feedback,
             feedback_timeout,
-            silent_dates,
+            # silent_dates,
         )
 
         self.audio_device = audio_device

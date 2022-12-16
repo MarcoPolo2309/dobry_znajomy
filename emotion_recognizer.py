@@ -10,13 +10,11 @@ class EmotionRecognizer:
         session_duration: datetime,
         give_feedback: bool,
         feedback_timeout: datetime,
-        silent_dates: list[dict],
     ):
         self.session_start_date = session_start_date
         self.session_duration = session_duration
         self.give_feedback = give_feedback
         self.feedback_timeout = feedback_timeout
-        self.silent_dates = silent_dates
         self.recognized_emotions = []
 
     def get_emotions(self):

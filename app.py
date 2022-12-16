@@ -17,7 +17,20 @@ class App(tk.Tk):
         window.grid_rowconfigure(0, minsize=500)
         window.grid_columnconfigure(0, minsize=800)
 
-        self.frames = {}
+        self.pages = []
+
+        self.frames = {
+            LogIn,
+            Options,
+            CreateAccount,
+            CheckStatistics,
+            EmotionRecognitionSession,
+            EmotionRecognitionSessionForm,
+            AppListening,
+            AppAsking,
+            SeeResolution,
+            Resolution,
+        }
         for F in (
             LogIn,
             Options,
@@ -34,10 +47,15 @@ class App(tk.Tk):
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
+        session = self.frames[EmotionRecognitionSessionForm].get_session()
+        frame = Wait(window, self, session)
+        self.frames[Wait] = frame
+        frame.grid(row=0, column=0, sticky="nsew")
+
         self.show_frame(LogIn)
 
-    def show_frame(self, page):
-        frame = self.frames[page]
+    def show_frame(self, page, **kwargs):
+        frame = page(self, **kwargs)
         frame.tkraise()
         self.title("Application")
 
