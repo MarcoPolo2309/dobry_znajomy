@@ -1,2 +1,2 @@
-# dobry_znajomy
-Recognize emotions from your voice or use it as mood tracker
+# Good Friend
+Track your mood and get memes, that will make you feel better
