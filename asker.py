@@ -43,7 +43,9 @@ class Asker:
                 break
             self.dates_of_questions.append(last_date_of_question)
 
-        print(f"\nThere will be {len(self.dates_of_questions)} questions")
+        print(
+            f"\nThere will be {len(self.dates_of_questions)} pairs of questions during your session"
+        )
 
         self.session_recognized_emotions = []
         self.emotions = {
@@ -65,6 +67,10 @@ class Asker:
 
     def run_session(self):
         for date_of_question in self.dates_of_questions:
+            print(
+                f"Next question at: {date_of_question.strftime('%d/%m/%Y %H:%M:%S')}",
+                "\n",
+            )
             while True:
                 if datetime.datetime.now() > date_of_question:
                     self.ask_for_mood()

@@ -1,7 +1,6 @@
 from pathlib import Path
 import pickle
 
-import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 
 from emotion import *
